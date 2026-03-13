@@ -9,7 +9,7 @@ export function Hero() {
     <section className="relative" id="hero">
       <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 -z-10" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-28 pb-16 md:pt-36 md:pb-24">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 pt-20 pb-12 md:pt-36 md:pb-24 overflow-hidden">
         {/* Headline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

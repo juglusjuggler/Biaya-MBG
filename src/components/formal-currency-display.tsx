@@ -5,15 +5,15 @@ import { formatRupiah } from "@/lib/format";
 /**
  * Komponen tampilan mata uang Rupiah formal.
  * Menampilkan angka sebagai satu baris utuh yang kuat dan berwibawa.
- * Tidak memecah angka menjadi fragmen visual yang berbeda.
+ * Responsif: menyesuaikan ukuran teks agar tidak terpotong di layar kecil.
  */
 export function FormalCurrencyDisplay({ amount }: { amount: number }) {
   const formatted = formatRupiah(amount);
 
   return (
-    <div className="text-center">
+    <div className="text-center w-full overflow-hidden px-2">
       <p
-        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white tracking-tight leading-none tabular-nums"
+        className="text-[clamp(1.25rem,5vw,3.75rem)] font-bold text-slate-900 dark:text-white tracking-tight leading-none tabular-nums whitespace-nowrap"
         aria-label={`Estimasi biaya berjalan: ${formatted}`}
       >
         {formatted}

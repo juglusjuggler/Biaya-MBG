@@ -75,7 +75,7 @@ export function LiveCounter() {
       <FormalCurrencyDisplay amount={displayAmount} />
 
       {/* Mode Selector */}
-      <div className="flex items-center justify-center gap-1 mt-6">
+      <div className="flex items-center justify-center gap-1 flex-wrap mt-6">
         {([
           { key: "combined" as ViewMode, label: "Gabungan" },
           { key: "2025" as ViewMode, label: "Fase 2025" },
