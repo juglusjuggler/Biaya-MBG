@@ -2,33 +2,37 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MBG Cost Tracker — Indonesia Free Nutritious Meals Spending Estimate",
+  title: "MBG Cost Tracker — Estimasi Biaya Program Makan Bergizi Gratis",
   description:
-    "A transparent public estimation dashboard tracking Indonesia's Makan Bergizi Gratis (MBG) program spending using official budget allocations, realized spending data, and derived calculations. Not a live treasury feed.",
+    "Dashboard estimasi transparan yang melacak belanja program Makan Bergizi Gratis (MBG) Indonesia menggunakan alokasi anggaran resmi, data realisasi, dan perhitungan turunan. Bukan feed data real-time perbendaharaan negara.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icon.png",
+  },
   keywords: [
     "MBG",
     "Makan Bergizi Gratis",
     "Indonesia",
-    "free meals",
-    "budget tracker",
-    "public spending",
+    "anggaran",
+    "belanja negara",
+    "estimasi biaya",
     "BGN",
     "Badan Gizi Nasional",
-    "transparency",
+    "transparansi",
   ],
   openGraph: {
-    title: "MBG Cost Tracker — Indonesia Free Nutritious Meals Spending Estimate",
+    title: "MBG Cost Tracker — Estimasi Biaya Program Makan Bergizi Gratis",
     description:
-      "Transparent public dashboard estimating the scale of Indonesia's MBG program using official data and derived formulas.",
+      "Dashboard publik transparan untuk mengestimasi skala program MBG Indonesia menggunakan data resmi dan rumus turunan.",
     type: "website",
-    locale: "en_US",
+    locale: "id_ID",
     siteName: "MBG Cost Tracker",
   },
   twitter: {
     card: "summary_large_image",
     title: "MBG Cost Tracker",
     description:
-      "Transparent public estimation dashboard for Indonesia's Free Nutritious Meals (MBG) program spending.",
+      "Dashboard estimasi transparan untuk belanja program Makan Bergizi Gratis (MBG) Indonesia.",
   },
   robots: {
     index: true,
@@ -42,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased">
         {children}
       </body>

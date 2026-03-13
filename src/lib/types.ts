@@ -1,5 +1,3 @@
-// ─── Source Classification ───────────────────────────────────────────────────
-
 export type SourceType = "official" | "derived" | "secondary" | "not-verified";
 
 export type Confidence = "high" | "medium" | "low" | "unverified";
@@ -16,8 +14,6 @@ export interface SourceEntry {
   note: string;
 }
 
-// ─── Metrics ─────────────────────────────────────────────────────────────────
-
 export interface MetricEntry {
   id: string;
   label: string;
@@ -30,26 +26,21 @@ export interface MetricEntry {
   lastReviewed: string;
   confidence: Confidence;
   caveat?: string;
-  icon?: string;
 }
-
-// ─── Phases ──────────────────────────────────────────────────────────────────
 
 export type BasisType = "realized" | "allocated";
 
 export interface PhaseConfig {
   id: string;
   label: string;
-  startDate: string; // ISO string
-  endDate: string; // ISO string
-  totalAmount: number; // in Rupiah
+  startDate: string;
+  endDate: string;
+  totalAmount: number;
   basisType: BasisType;
   formulaNote: string;
   sourceIds: string[];
   badgeType: SourceType;
 }
-
-// ─── Timeline ────────────────────────────────────────────────────────────────
 
 export type TimelineCategory =
   | "launch"
@@ -68,8 +59,6 @@ export interface TimelineEntry {
   sourceId?: string;
 }
 
-// ─── Incidents ───────────────────────────────────────────────────────────────
-
 export interface IncidentEntry {
   id: string;
   title: string;
@@ -81,15 +70,11 @@ export interface IncidentEntry {
   sourceId?: string;
 }
 
-// ─── FAQ ─────────────────────────────────────────────────────────────────────
-
 export interface FAQEntry {
   id: string;
   question: string;
   answer: string;
 }
-
-// ─── Explanation Cards ───────────────────────────────────────────────────────
 
 export interface ExplanationCard {
   title: string;
@@ -97,8 +82,6 @@ export interface ExplanationCard {
   isHighlighted?: boolean;
   icon?: string;
 }
-
-// ─── Credibility ─────────────────────────────────────────────────────────────
 
 export interface CredibilitySummary {
   official: number;

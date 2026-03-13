@@ -1,93 +1,74 @@
 /**
- * Format a number as Indonesian Rupiah.
+ * Format angka sebagai Rupiah dengan pemisah ribuan titik.
  */
 export function formatRupiah(amount: number): string {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  const rounded = Math.floor(amount);
+  const formatted = rounded
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `Rp${formatted}`;
 }
 
 /**
- * Format a large Rupiah number in compact notation with a scale suffix.
+ * Format angka Rupiah besar dengan notasi kompak (M/T).
  */
 export function formatRupiahCompact(amount: number): string {
-  if (amount >= 1e15) {
-    return `Rp${(amount / 1e12).toFixed(1)} T+`;
-  }
   if (amount >= 1e12) {
-    return `Rp${(amount / 1e12).toFixed(2)} T`;
+    return `Rp${(amount / 1e12).toFixed(1).replace(".", ",")} T`;
   }
   if (amount >= 1e9) {
-    return `Rp${(amount / 1e9).toFixed(1)} B`;
+    return `Rp${(amount / 1e9).toFixed(1).replace(".", ",")} M`;
   }
   if (amount >= 1e6) {
-    return `Rp${(amount / 1e6).toFixed(1)} M`;
+    return `Rp${(amount / 1e6).toFixed(1).replace(".", ",")} Jt`;
   }
   return formatRupiah(amount);
 }
 
 /**
- * Format a number with locale-aware thousand separators.
+ * Format angka dengan pemisah ribuan.
  */
 export function formatNumber(n: number, decimals = 0): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("id-ID", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(n);
 }
 
+const BULAN = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+];
+
+const BULAN_PENDEK = [
+  "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+  "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
+];
+
 /**
- * Format a large number with compact suffix (M, B, T).
+ * Parse year/month/day from a date string without timezone conversion.
+ * Extracts the date portion directly from the string (YYYY-MM-DD)
+ * so the result is identical on server and client regardless of timezone.
  */
-export function formatCompact(n: number): string {
-  if (n >= 1e12) return `${(n / 1e12).toFixed(2)}T`;
-  if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
-  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
-  return n.toFixed(0);
+function parseDateParts(dateStr: string): { year: number; month: number; day: number } {
+  const datePart = dateStr.slice(0, 10); // "YYYY-MM-DD"
+  const [y, m, d] = datePart.split("-").map(Number);
+  return { year: y, month: m - 1, day: d };
 }
 
 /**
- * Format a rate per unit time for display.
- */
-export function formatRate(amount: number, unit: string): string {
-  return `${formatRupiahCompact(amount)} / ${unit}`;
-}
-
-/**
- * Split a large Rupiah amount into integer and decimal parts for animated display.
- * Returns [wholePart, decimalPart] as strings.
- */
-export function splitRupiahForDisplay(amount: number): {
-  prefix: string;
-  trillions: string;
-  billions: string;
-  millions: string;
-  suffix: string;
-} {
-  const t = Math.floor(amount / 1e12);
-  const b = Math.floor((amount % 1e12) / 1e9);
-  const m = Math.floor((amount % 1e9) / 1e6);
-
-  return {
-    prefix: "Rp",
-    trillions: t.toLocaleString("en-US"),
-    billions: b.toString().padStart(3, "0"),
-    millions: m.toString().padStart(3, "0"),
-    suffix: "T",
-  };
-}
-
-/**
- * Format date for display.
+ * Format tanggal untuk tampilan dalam Bahasa Indonesia.
+ * Deterministik — tidak bergantung pada locale atau timezone runtime.
  */
 export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const { year, month, day } = parseDateParts(dateStr);
+  return `${day} ${BULAN[month]} ${year}`;
+}
+
+/**
+ * Format tanggal pendek ("6 Jan 2025").
+ */
+export function formatDateShort(dateStr: string): string {
+  const { year, month, day } = parseDateParts(dateStr);
+  return `${day} ${BULAN_PENDEK[month]} ${year}`;
 }

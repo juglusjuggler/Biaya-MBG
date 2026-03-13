@@ -1,88 +1,87 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { AlertTriangle } from "lucide-react";
 import { incidents } from "@/lib/data";
+import { getSourceById } from "@/lib/sources";
+import { formatDate } from "@/lib/format";
 import { SourceBadge } from "./source-badge";
 import { WarningBanner } from "./warning-banner";
-import { formatDate } from "@/lib/format";
-import { ShieldAlert, AlertTriangle } from "lucide-react";
 
 export function RiskSection() {
   return (
-    <section
-      className="py-20 md:py-28 bg-slate-50/50 dark:bg-slate-950/50"
-      id="risk"
-    >
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider mb-3">
-            <ShieldAlert className="h-4 w-4" />
-            Contextual Section
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-            Implementation &amp; Food Safety Risk
+    <section className="py-16 md:py-24 bg-slate-50 dark:bg-slate-950/50" id="risiko">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+            Risiko Implementasi &amp; Keamanan Pangan
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Factual reporting on food safety and implementation incidents. This
-            section is clearly separated from the main spending estimation model.
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+            Insiden terkait keamanan pangan dan risiko operasional yang
+            dilaporkan dalam penyelenggaraan program MBG.
           </p>
         </div>
 
-        <WarningBanner variant="warning" className="mb-8">
-          <strong>Important:</strong> Incident data is dynamic and may change as
-          investigations, reporting standards, and official confirmations evolve.
-          This data should not be conflated with official budget metrics in terms
-          of certainty or provenance.
+        <WarningBanner variant="warning" className="mb-6">
+          Data insiden berasal dari siaran pers resmi BGN dan, jika disebutkan,
+          pelaporan media sekunder. Jumlah insiden bersifat dinamis dan dapat
+          berubah seiring investigasi berjalan.
         </WarningBanner>
 
         <div className="space-y-4">
-          {incidents.map((incident, i) => (
-            <motion.div
-              key={incident.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="rounded-2xl border border-red-100 dark:border-red-900/50 bg-white dark:bg-slate-900 p-5"
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {incident.title}
-                  </h3>
+          {incidents.map((incident, i) => {
+            const source = incident.sourceId ? getSourceById(incident.sourceId) : undefined;
+            return (
+              <motion.div
+                key={incident.id}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.3 }}
+                className="rounded-xl border border-amber-200 bg-amber-50/40 dark:border-amber-800 dark:bg-amber-950/20 p-5"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {incident.title}
+                      </h3>
+                      <SourceBadge type={incident.verificationStatus as "official" | "derived" | "secondary" | "not-verified"} />
+                    </div>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
+                      {incident.description}
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                      <span>
+                        Tanggal:{" "}
+                        {formatDate(incident.date)}
+                      </span>
+                      <span>Sumber: {incident.reportingSource}</span>
+                      {source?.url && (
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                        >
+                          Lihat Sumber →
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <SourceBadge
-                  type={incident.verificationStatus}
-                  size="xs"
-                />
-              </div>
-
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                {formatDate(incident.date)} · Reported by:{" "}
-                {incident.reportingSource}
-              </p>
-
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                {incident.description}
-              </p>
-
-              {incident.affectedPersons !== undefined && (
-                <p className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
-                  Affected persons: {incident.affectedPersons.toLocaleString()}
-                </p>
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {incidents.length === 0 && (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              No incident data currently loaded. This section will populate when
-              food safety or implementation risk entries are added.
-            </p>
-          </div>
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 py-8">
+            Belum ada insiden yang tercatat.
+          </p>
         )}
       </div>
     </section>

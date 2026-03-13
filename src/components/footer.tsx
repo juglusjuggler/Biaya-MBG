@@ -1,39 +1,41 @@
-"use client";
-
-import { FileText, BookOpen, Github, Mail } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <div className="grid sm:grid-cols-3 gap-8 mb-8">
+          {/* About */}
           <div>
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-              MBG Cost Tracker
+              Tentang Dashboard
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              A transparent public estimation dashboard for Indonesia&rsquo;s
-              Free Nutritious Meals program (Makan Bergizi Gratis).
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Dashboard ini menyajikan estimasi biaya berjalan program Makan
+              Bergizi Gratis (MBG) berdasarkan data resmi pemerintah.
+              Penghitung berjalan merupakan model linear, bukan feed data
+              real-time dari perbendaharaan negara.
             </p>
           </div>
 
+          {/* Quick links */}
           <div>
-            <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Navigation
-            </h4>
-            <ul className="space-y-2">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+              Navigasi
+            </h3>
+            <ul className="space-y-1.5 text-xs">
               {[
-                { label: "Methodology", href: "#methodology", icon: FileText },
-                { label: "Source Registry", href: "#sources", icon: BookOpen },
-                { label: "Program Scale", href: "#scale", icon: FileText },
-                { label: "FAQ", href: "#faq", icon: FileText },
+                { label: "Metodologi", href: "#metodologi" },
+                { label: "Sumber Data", href: "#sumber" },
+                { label: "Skala Program", href: "#skala" },
+                { label: "Timeline", href: "#timeline" },
+                { label: "Pertanyaan Umum", href: "#faq" },
               ].map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors inline-flex items-center gap-1.5"
+                    className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                   >
-                    <link.icon className="h-3 w-3" />
                     {link.label}
                   </a>
                 </li>
@@ -41,54 +43,58 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Sources */}
           <div>
-            <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Project
-            </h4>
-            <ul className="space-y-2">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+              Sumber Utama
+            </h3>
+            <ul className="space-y-1.5 text-xs">
               <li>
                 <a
-                  href="https://github.com/fitrianabila2025group/Biaya-MBG"
+                  href="https://www.bgn.go.id/juknis"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors inline-flex items-center gap-1.5"
+                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  <Github className="h-3 w-3" />
-                  GitHub Repository
+                  Juknis BGN <ExternalLink className="h-2.5 w-2.5" />
                 </a>
               </li>
               <li>
                 <a
-                  href="#"
-                  className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors inline-flex items-center gap-1.5"
+                  href="https://en.antaranews.com/news/399809"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  <Mail className="h-3 w-3" />
-                  Submit a Correction
+                  Antara — Alokasi 2026{" "}
+                  <ExternalLink className="h-2.5 w-2.5" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.antaranews.com/berita/5311804"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Antara — Realisasi 2025{" "}
+                  <ExternalLink className="h-2.5 w-2.5" />
                 </a>
               </li>
             </ul>
           </div>
-
-          <div>
-            <h4 className="text-xs font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-              Disclaimer
-            </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              This dashboard estimates MBG spending using official budget and
-              realization figures plus transparent formulas. It does not
-              represent a live audited feed of treasury transactions.
-            </p>
-          </div>
         </div>
 
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Built as a public-interest data transparency project. If you have
-            access to newer official sources, please contribute corrections.
-          </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500">
-            Data last reviewed: 15 December 2025
-          </p>
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center sm:text-left">
+              Dashboard ini dibuat untuk tujuan transparansi publik dan edukasi.
+              Bukan representasi resmi pemerintah.
+            </p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">
+              Tinjauan terakhir: 15 Desember 2025
+            </p>
+          </div>
         </div>
       </div>
     </footer>

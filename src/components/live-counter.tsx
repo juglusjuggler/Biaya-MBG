@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { phases } from "@/lib/data";
 import {
   getCumulativeEstimate,
   getCurrentPhase,
   getPhaseRates,
+  getPhaseEstimate,
   isPhaseActive,
 } from "@/lib/calculations";
-import { formatRupiah, formatRupiahCompact } from "@/lib/format";
+import { formatRupiahCompact } from "@/lib/format";
+import { FormalCurrencyDisplay } from "./formal-currency-display";
 import { SourceBadge } from "./source-badge";
 import { WarningBanner } from "./warning-banner";
-import { Activity, Clock, TrendingUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ViewMode = "combined" | "2025" | "2026";
 
 export function LiveCounter() {
   const [now, setNow] = useState(() => new Date());
   const [mounted, setMounted] = useState(false);
+  const [mode, setMode] = useState<ViewMode>("combined");
 
   useEffect(() => {
     setMounted(true);
@@ -25,133 +28,91 @@ export function LiveCounter() {
     return () => clearInterval(interval);
   }, []);
 
+  const phase2025 = phases.find((p) => p.id === "2025-realisasi")!;
+  const phase2026 = phases.find((p) => p.id === "2026-alokasi")!;
+
   const cumulative = getCumulativeEstimate(phases, now);
-  const currentPhase = getCurrentPhase(phases, now);
-  const rates = currentPhase ? getPhaseRates(currentPhase) : null;
+  const est2025 = getPhaseEstimate(phase2025, now);
+  const est2026 = getPhaseEstimate(phase2026, now);
 
-  const formatCounter = useCallback((amount: number) => {
-    const t = Math.floor(amount / 1e12);
-    const remainder = amount % 1e12;
-    const b = Math.floor(remainder / 1e9);
-    const m = Math.floor((remainder % 1e9) / 1e6);
-    const k = Math.floor((remainder % 1e6) / 1e3);
+  const displayAmount =
+    mode === "2025" ? est2025 : mode === "2026" ? est2026 : cumulative;
 
-    return {
-      trillions: t.toLocaleString("en-US"),
-      billions: b.toString().padStart(3, "0"),
-      millions: m.toString().padStart(3, "0"),
-      thousands: k.toString().padStart(3, "0"),
-    };
-  }, []);
+  const activePhase = getCurrentPhase(phases, now);
+  const rates = activePhase ? getPhaseRates(activePhase) : null;
 
-  const parts = formatCounter(cumulative);
+  const currentPhaseForMode =
+    mode === "2025" ? phase2025 : mode === "2026" ? phase2026 : activePhase;
+
+  const ratesForMode = currentPhaseForMode
+    ? getPhaseRates(currentPhaseForMode)
+    : rates;
 
   if (!mounted) {
     return (
-      <div className="text-center py-12">
-        <div className="h-20 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse max-w-2xl mx-auto" />
+      <div className="py-12">
+        <div className="h-20 bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse max-w-2xl mx-auto" />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      {/* Main Counter Display */}
-      <div className="relative">
-        <div className="text-center mb-3">
-          <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            <Activity className="h-3.5 w-3.5 text-emerald-500 animate-pulse" />
-            Estimated Cumulative MBG Spending
-          </div>
+      {/* Label */}
+      <div className="text-center">
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">
+          Estimasi Biaya MBG yang Sudah Berjalan
+        </p>
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <SourceBadge type="derived" size="sm" />
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Berdasarkan rumus linear
+          </span>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center"
-        >
-          <div className="inline-flex items-baseline gap-1 font-mono">
-            <span className="text-2xl md:text-3xl font-semibold text-slate-500 dark:text-slate-400">
-              Rp
-            </span>
-            <span className="text-5xl md:text-7xl lg:text-8xl font-bold text-slate-900 dark:text-white tracking-tight tabular-nums">
-              {parts.trillions}
-            </span>
-            <span className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-400 dark:text-slate-500 tracking-tight tabular-nums">
-              .{parts.billions}
-            </span>
-            <span className="text-xl md:text-2xl lg:text-3xl font-semibold text-slate-300 dark:text-slate-600 tracking-tight tabular-nums">
-              .{parts.millions}
-            </span>
-            <span className="text-sm md:text-base font-medium text-slate-300 dark:text-slate-700 tracking-tight tabular-nums">
-              .{parts.thousands}
-            </span>
-          </div>
-
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <SourceBadge type="derived" size="sm" />
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Linearized formula-based estimate
-            </span>
-          </div>
-        </motion.div>
       </div>
 
-      {/* Current Phase Indicator */}
-      {currentPhase && (
-        <div className="flex flex-col items-center gap-3">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-sm">
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isPhaseActive(currentPhase, now)
-                  ? "bg-emerald-500 animate-pulse"
-                  : "bg-slate-400"
-              )}
-            />
-            <span className="font-medium text-slate-700 dark:text-slate-300">
-              {currentPhase.label}
-            </span>
-            <SourceBadge type={currentPhase.badgeType} size="xs" />
-          </div>
-        </div>
-      )}
+      {/* Main Amount */}
+      <FormalCurrencyDisplay amount={displayAmount} />
+
+      {/* Mode Selector */}
+      <div className="flex items-center justify-center gap-1 mt-6">
+        {([
+          { key: "combined" as ViewMode, label: "Gabungan" },
+          { key: "2025" as ViewMode, label: "Fase 2025" },
+          { key: "2026" as ViewMode, label: "Fase 2026" },
+        ] as const).map((opt) => (
+          <button
+            key={opt.key}
+            onClick={() => setMode(opt.key)}
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              mode === opt.key
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
 
       {/* Rate Metrics */}
-      {rates && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
+      {ratesForMode && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto mt-6">
           {[
-            {
-              label: "Per Second",
-              value: rates.perSecond,
-              icon: Zap,
-            },
-            {
-              label: "Per Minute",
-              value: rates.perMinute,
-              icon: Clock,
-            },
-            {
-              label: "Per Hour",
-              value: rates.perHour,
-              icon: TrendingUp,
-            },
-            {
-              label: "Per Day",
-              value: rates.perDay,
-              icon: Activity,
-            },
+            { label: "Per Detik", value: ratesForMode.perSecond },
+            { label: "Per Menit", value: ratesForMode.perMinute },
+            { label: "Per Jam", value: ratesForMode.perHour },
+            { label: "Per Hari", value: ratesForMode.perDay },
           ].map((r) => (
             <div
               key={r.label}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-center"
+              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-center"
             >
-              <r.icon className="h-4 w-4 text-slate-400 mx-auto mb-2" />
               <p className="text-sm font-bold text-slate-900 dark:text-white tabular-nums">
                 {formatRupiahCompact(r.value)}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 {r.label}
               </p>
             </div>
@@ -160,16 +121,15 @@ export function LiveCounter() {
       )}
 
       {/* Phase Summary */}
-      <div className="max-w-3xl mx-auto space-y-3">
+      <div className="max-w-3xl mx-auto space-y-2 mt-4">
         {phases.map((phase) => {
           const active = isPhaseActive(phase, now);
           const complete = now >= new Date(phase.endDate);
-
           return (
             <div
               key={phase.id}
               className={cn(
-                "rounded-2xl border p-4 flex items-center justify-between gap-4",
+                "rounded-xl border p-4 flex items-center justify-between gap-4",
                 active
                   ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20"
                   : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
@@ -178,7 +138,7 @@ export function LiveCounter() {
               <div className="flex items-center gap-3 min-w-0">
                 <span
                   className={cn(
-                    "h-2.5 w-2.5 rounded-full shrink-0",
+                    "h-2 w-2 rounded-full shrink-0",
                     active
                       ? "bg-emerald-500 animate-pulse"
                       : complete
@@ -187,11 +147,11 @@ export function LiveCounter() {
                   )}
                 />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">
                     {phase.label}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {formatRupiah(phase.totalAmount)} ({phase.basisType})
+                    {formatRupiahCompact(phase.totalAmount)} · {phase.basisType === "realized" ? "Realisasi" : "Alokasi"}
                   </p>
                 </div>
               </div>
@@ -201,12 +161,12 @@ export function LiveCounter() {
         })}
       </div>
 
-      {/* Linearization Disclaimer */}
-      <WarningBanner variant="info" className="max-w-3xl mx-auto">
-        <strong>About this counter:</strong> Linearization divides a total
-        budget or realization figure evenly across all seconds in the period.
-        This is a mathematical simplification for illustrative purposes. Actual
-        government disbursement does not occur at a constant per-second rate.
+      {/* Disclaimer */}
+      <WarningBanner variant="info" className="max-w-3xl mx-auto mt-4">
+        <strong>Tentang penghitung ini:</strong> Linearisasi membagi total
+        anggaran atau realisasi secara merata ke seluruh detik dalam periode.
+        Ini adalah penyederhanaan matematis untuk tujuan ilustrasi. Pencairan
+        oleh pemerintah tidak terjadi dengan laju konstan per detik.
       </WarningBanner>
     </div>
   );

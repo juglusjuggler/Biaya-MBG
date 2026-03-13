@@ -15,39 +15,39 @@ const iconMap: Record<string, React.ElementType> = {
 
 export function ExplanationSection() {
   return (
-    <section className="py-20 md:py-28" id="explanation">
+    <section className="py-16 md:py-24" id="penjelasan">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-            What This Number Is — And Is Not
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+            Apa yang Ditampilkan Dashboard Ini?
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Understanding the difference between budget allocation, realized
-            spending, formula-based estimation, and audited actuals.
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+            Memahami perbedaan antara alokasi anggaran, realisasi belanja,
+            estimasi berjalan, dan belanja aktual yang diaudit.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-5 mb-8">
+        <div className="grid sm:grid-cols-2 gap-4 mb-6">
           {explanationCards.map((card, i) => {
             const Icon = iconMap[card.icon || ""] || Calculator;
             return (
               <motion.div
                 key={card.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
                 className={cn(
-                  "rounded-3xl border p-6 transition-all",
+                  "rounded-xl border p-5",
                   card.isHighlighted
-                    ? "border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20 ring-1 ring-amber-200/50 dark:ring-amber-800/50"
+                    ? "border-amber-200 bg-amber-50/40 dark:border-amber-800 dark:bg-amber-950/20"
                     : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
                 )}
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     className={cn(
-                      "h-10 w-10 rounded-xl flex items-center justify-center",
+                      "h-9 w-9 rounded-lg flex items-center justify-center",
                       card.isHighlighted
                         ? "bg-amber-100 dark:bg-amber-900/40"
                         : "bg-slate-100 dark:bg-slate-800"
@@ -55,14 +55,14 @@ export function ExplanationSection() {
                   >
                     <Icon
                       className={cn(
-                        "h-5 w-5",
+                        "h-4 w-4",
                         card.isHighlighted
-                          ? "text-amber-600 dark:text-amber-400"
+                          ? "text-amber-700 dark:text-amber-400"
                           : "text-slate-600 dark:text-slate-400"
                       )}
                     />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  <h3 className="text-base font-semibold text-slate-900 dark:text-white">
                     {card.title}
                   </h3>
                 </div>
@@ -75,9 +75,10 @@ export function ExplanationSection() {
         </div>
 
         <WarningBanner variant="warning">
-          <strong>Key distinction:</strong> The live counter is not a direct live
-          feed of government disbursement transactions. It is a formula-based
-          linear estimate derived from known budget and realization totals.
+          <strong>Perbedaan penting:</strong> Penghitung berjalan di dashboard
+          ini bukan feed langsung dari transaksi pencairan kas negara. Ini
+          merupakan estimasi linear berbasis rumus yang diturunkan dari total
+          anggaran dan realisasi yang diketahui.
         </WarningBanner>
       </div>
     </section>

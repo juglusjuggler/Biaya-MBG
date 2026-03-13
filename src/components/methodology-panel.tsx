@@ -1,183 +1,151 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SourceBadge } from "./source-badge";
+import { phases, metrics } from "@/lib/data";
+import { sources } from "@/lib/sources";
+import { formatDate } from "@/lib/format";
 import { WarningBanner } from "./warning-banner";
-import { cn } from "@/lib/utils";
 
 export function MethodologyPanel() {
   return (
-    <section className="py-20 md:py-28 bg-slate-50/50 dark:bg-slate-950/50" id="methodology">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-            Methodology
+    <section className="py-16 md:py-24 bg-slate-50 dark:bg-slate-950/50" id="metodologi">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+            Metodologi
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            How the estimation model works, what it assumes, and where its
-            limitations lie.
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+            Bagaimana estimasi biaya berjalan dihitung — rumus, asumsi, dan
+            batasannya.
           </p>
         </div>
 
-        <div className="space-y-8">
-          {/* Model Overview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 md:p-8"
-          >
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-              Estimation Model
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-              This dashboard uses a <strong>linearized estimation model</strong>{" "}
-              that distributes known budget or realization totals evenly across
-              the time period of each phase. The model operates in two phases:
+        {/* Formula */}
+        <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-6 mb-6">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-4">
+            Rumus Linearisasi
+          </h3>
+          <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-4 font-mono text-sm text-slate-700 dark:text-slate-300 space-y-1">
+            <p>total_detik = (tanggal_akhir − tanggal_mulai) dalam detik</p>
+            <p>biaya_per_detik = total_anggaran / total_detik</p>
+            <p>estimasi_berjalan = detik_berlalu × biaya_per_detik</p>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
+              // Untuk tampilan gabungan:
             </p>
-
-            <div className="space-y-4 mb-6">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-sm text-slate-900 dark:text-white">
-                    Phase 1: 2025 Realized
-                  </span>
-                  <SourceBadge type="official" size="xs" />
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Uses the reported realization of{" "}
-                  <strong>Rp52.9 trillion</strong> (74.6% of the Rp71T budget
-                  ceiling), linearized across the 2025 program period (6 Jan –
-                  31 Dec 2025).
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-semibold text-sm text-slate-900 dark:text-white">
-                    Phase 2: 2026 Allocated
-                  </span>
-                  <SourceBadge type="derived" size="xs" />
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Uses the official 2026 allocation of{" "}
-                  <strong>Rp335 trillion</strong>, linearized across the full
-                  calendar year 2026. This is an allocated (not yet realized)
-                  estimate.
-                </p>
-              </div>
-            </div>
-
-            <h4 className="text-base font-semibold text-slate-900 dark:text-white mb-3">
-              Formulas
-            </h4>
-
-            <div className="space-y-3 mb-6">
-              {[
-                {
-                  label: "Daily Rate",
-                  formula: "daily_rate = total_amount / number_of_days",
-                  example:
-                    "Rp335T / 365 = ~Rp917.8B per day (2026 phase)",
-                },
-                {
-                  label: "Second Rate",
-                  formula: "second_rate = total_amount / total_seconds_in_phase",
-                  example:
-                    "Rp335T / 31,536,000 = ~Rp10.6M per second (2026 phase)",
-                },
-                {
-                  label: "Cumulative Estimate",
-                  formula:
-                    "cumulative = Σ(completed_phase_totals) + current_phase_elapsed × rate_per_second",
-                  example:
-                    "Rp52.9T (2025) + elapsed_2026 × Rp10.6M/s",
-                },
-              ].map((f) => (
-                <div
-                  key={f.label}
-                  className="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 p-4"
-                >
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                    {f.label}
-                  </p>
-                  <pre className="text-sm font-mono text-slate-800 dark:text-slate-200 mb-2 overflow-x-auto">
-                    {f.formula}
-                  </pre>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Example: {f.example}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <h4 className="text-base font-semibold text-slate-900 dark:text-white mb-3">
-              Key Assumptions
-            </h4>
-            <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-2 mb-6">
-              <li>
-                Spending is distributed uniformly across each phase period
-                (linearization).
-              </li>
-              <li>
-                The 2025 realization figure (Rp52.9T) represents total spending
-                for the full program year.
-              </li>
-              <li>
-                The 2026 allocation (Rp335T) is used in full as the basis for
-                the Phase 2 estimate, though actual realization may differ.
-              </li>
-              <li>
-                Operational factors (holidays, ramp-up periods, regional
-                variation) are not modeled.
-              </li>
-            </ul>
-
-            <h4 className="text-base font-semibold text-slate-900 dark:text-white mb-3">
-              Source Mapping
-            </h4>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Phase 1 relies on Ministry of Finance data as reported by Antara.
-              Phase 2 relies on the official 2026 budget allocation announcement.
-              All source entries are available in the{" "}
-              <a
-                href="#sources"
-                className="underline text-emerald-600 dark:text-emerald-400 hover:no-underline"
-              >
-                Source Registry
-              </a>
-              .
+            <p>
+              total = Σ(fase_selesai.total) + fase_aktif.estimasi_berjalan
             </p>
-          </motion.div>
-
-          {/* Limitations */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-3xl border border-amber-200 dark:border-amber-800 bg-amber-50/30 dark:bg-amber-950/20 p-6 md:p-8"
-          >
-            <h3 className="text-xl font-semibold text-amber-900 dark:text-amber-200 mb-4">
-              Methodological Limitations
-            </h3>
-            <ul className="space-y-3">
-              {[
-                "Linearized estimation does not reflect real disbursement timing. Government spending is typically uneven, with seasonal patterns and procurement cycles.",
-                "Realized spending data may be available only periodically (e.g., quarterly or semi-annually). The model uses the latest available figure.",
-                "Budget revisions by the government may change the total for a phase. The model uses the allocation at the time of last review.",
-                "Implementation interruptions (e.g., kitchen closures) do not automatically mean spending stopped — overhead and fixed costs may continue.",
-                "Secondary risk data (incidents, food safety reports) may evolve after investigation. Numbers cited from press reports may be updated later.",
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
-                  <span className="text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+          </div>
         </div>
+
+        {/* Phase details */}
+        <div className="space-y-4 mb-6">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+            Detail Fase
+          </h3>
+          {phases.map((phase) => (
+            <motion.div
+              key={phase.id}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {phase.label}
+                </h4>
+                <span className="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                  {phase.basisType === "realized"
+                    ? "Basis: Realisasi"
+                    : "Basis: Alokasi"}
+                </span>
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-3">
+                {phase.formulaNote}
+              </p>
+              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                <span>
+                  Mulai:{" "}
+                  {formatDate(phase.startDate)}
+                </span>
+                <span>
+                  Akhir:{" "}
+                  {formatDate(phase.endDate)}
+                </span>
+                <span>
+                  Sumber:{" "}
+                  {phase.sourceIds
+                    .map(
+                      (sid) =>
+                        sources.find((s) => s.id === sid)?.organization || sid
+                    )
+                    .join(", ")}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Assumptions & Limitations */}
+        <div className="grid sm:grid-cols-2 gap-4 mb-6">
+          <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+              Asumsi Utama
+            </h3>
+            <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Belanja tersebar merata sepanjang setiap fase (linearisasi).
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Realisasi 2025 sebesar Rp52,9T dianggap final untuk
+                fase tersebut.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Target SPPG menggunakan titik tengah dari rentang yang dinyatakan.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Alokasi 2026 diasumsikan tetap (tidak ada perubahan pagu
+                pertengahan tahun).
+              </li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-5">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+              Keterbatasan
+            </h3>
+            <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Bukan feed data real-time dari perbendaharaan negara.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Tidak memperhitungkan pola pencairan musiman atau bertahap.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Estimasi turunan (biaya harian, per penerima) bersifat
+                sangat kasar.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-slate-400 dark:text-slate-500">•</span>
+                Metrik per-SPPG menggunakan titik tengah dari rentang target
+                (37.500).
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <WarningBanner variant="info">
+          Semua rumus dan asumsi didokumentasikan di sini agar proses estimasi
+          dapat diperiksa dan dikritisi. Jika terdapat kekeliruan, silakan
+          laporkan.
+        </WarningBanner>
       </div>
     </section>
   );

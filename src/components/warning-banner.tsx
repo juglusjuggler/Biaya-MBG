@@ -13,33 +13,32 @@ export function WarningBanner({
   className?: string;
 }) {
   const isWarning = variant === "warning";
-
   return (
     <div
       className={cn(
-        "rounded-2xl border px-5 py-4 flex items-start gap-3",
+        "rounded-xl border px-5 py-4 flex items-start gap-3",
         isWarning
           ? "bg-red-50/80 border-red-200 dark:bg-red-950/30 dark:border-red-900"
-          : "bg-blue-50/80 border-blue-200 dark:bg-blue-950/30 dark:border-blue-900",
+          : "bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-700",
         className
       )}
       role="alert"
     >
       {isWarning ? (
-        <AlertTriangle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 shrink-0" />
+        <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
       ) : (
-        <Info className="h-5 w-5 text-blue-500 dark:text-blue-400 mt-0.5 shrink-0" />
+        <Info className="h-5 w-5 text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
       )}
-      <p
+      <div
         className={cn(
           "text-sm leading-relaxed",
           isWarning
-            ? "text-red-800 dark:text-red-200"
-            : "text-blue-800 dark:text-blue-200"
+            ? "text-red-900 dark:text-red-200"
+            : "text-slate-700 dark:text-slate-300"
         )}
       >
         {children}
-      </p>
+      </div>
     </div>
   );
 }

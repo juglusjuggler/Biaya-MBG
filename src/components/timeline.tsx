@@ -2,27 +2,21 @@
 
 import { motion } from "framer-motion";
 import { timeline } from "@/lib/data";
-import { SourceBadge } from "./source-badge";
-import { formatDate } from "@/lib/format";
+import { formatDateShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import {
-  Rocket,
-  Wallet,
-  Building2,
-  ShieldAlert,
-  FileText,
-} from "lucide-react";
-import type { TimelineCategory } from "@/lib/types";
 
-const categoryConfig: Record<
-  TimelineCategory,
-  { icon: React.ElementType; color: string }
-> = {
-  launch: { icon: Rocket, color: "text-emerald-500" },
-  budget: { icon: Wallet, color: "text-blue-500" },
-  operational: { icon: Building2, color: "text-purple-500" },
-  "food-safety": { icon: ShieldAlert, color: "text-red-500" },
-  policy: { icon: FileText, color: "text-slate-500" },
+const categoryLabels: Record<string, string> = {
+  launch: "Peluncuran",
+  budget: "Anggaran",
+  "food-safety": "Keamanan Pangan",
+  operational: "Operasional",
+};
+
+const categoryColors: Record<string, string> = {
+  launch: "bg-emerald-500",
+  budget: "bg-blue-500",
+  "food-safety": "bg-amber-500",
+  operational: "bg-slate-500",
 };
 
 export function Timeline() {
@@ -31,60 +25,91 @@ export function Timeline() {
   );
 
   return (
-    <section className="py-20 md:py-28" id="timeline">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-4">
-            Program Timeline
+    <section className="py-16 md:py-24" id="timeline">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+            Timeline Program
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Key milestones in the MBG program from launch through 2026
-            implementation.
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+            Kronologi kejadian penting dalam penyelenggaraan program MBG.
           </p>
         </div>
 
+        {/* Category legend */}
+        <div className="flex flex-wrap gap-3 justify-center mb-8">
+          {Object.entries(categoryLabels).map(([key, label]) => (
+            <div key={key} className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+              <span className={cn("h-2.5 w-2.5 rounded-full", categoryColors[key])} />
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {/* Timeline */}
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-6 md:left-8 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-800" />
+          <div className="absolute left-4 sm:left-1/2 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-800" />
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {sorted.map((entry, i) => {
-              const { icon: Icon, color } = categoryConfig[entry.category];
-
+              const isLeft = i % 2 === 0;
               return (
                 <motion.div
                   key={entry.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.05, duration: 0.4 }}
-                  className="relative pl-16 md:pl-20"
+                  transition={{ delay: i * 0.05, duration: 0.3 }}
+                  className={cn(
+                    "relative flex items-start",
+                    "sm:justify-center"
+                  )}
                 >
                   {/* Dot */}
-                  <div className="absolute left-4 md:left-6 top-1 h-4 w-4 rounded-full border-2 border-white dark:border-slate-900 bg-slate-300 dark:bg-slate-700 shadow-sm z-10" />
+                  <div
+                    className={cn(
+                      "absolute left-4 sm:left-1/2 -translate-x-1/2 h-3 w-3 rounded-full border-2 border-white dark:border-slate-950 z-10",
+                      categoryColors[entry.category] || "bg-slate-400"
+                    )}
+                    style={{ top: "1.25rem" }}
+                  />
 
-                  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <div className="flex items-center gap-2">
-                        <Icon className={cn("h-4 w-4", color)} />
-                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          {entry.category}
+                  {/* Card */}
+                  <div
+                    className={cn(
+                      "ml-10 sm:ml-0 sm:w-[calc(50%-2rem)]",
+                      isLeft
+                        ? "sm:mr-auto sm:pr-8 sm:text-right"
+                        : "sm:ml-auto sm:pl-8 sm:text-left"
+                    )}
+                  >
+                    <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4">
+                      <div
+                        className={cn(
+                          "flex items-center gap-2 mb-1.5",
+                          isLeft ? "sm:justify-end" : "sm:justify-start"
+                        )}
+                      >
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {formatDateShort(entry.date)}
+                        </span>
+                        <span
+                          className={cn(
+                            "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                            "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                          )}
+                        >
+                          {categoryLabels[entry.category] || entry.category}
                         </span>
                       </div>
-                      <SourceBadge type={entry.sourceType} size="xs" />
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
+                        {entry.title}
+                      </h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {entry.description}
+                      </p>
                     </div>
-
-                    <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
-                      {entry.title}
-                    </h3>
-
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                      {formatDate(entry.date)}
-                    </p>
-
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                      {entry.description}
-                    </p>
                   </div>
                 </motion.div>
               );
